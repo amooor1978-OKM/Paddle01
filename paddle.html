@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Paddle Tourney">
+  <meta name="theme-color" content="#f97316">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f97316'/%3E%3Ctext x='50' y='67' font-size='45' text-anchor='middle' fill='white' font-weight='bold'%3E🏓%3C/text%3E%3C/svg%3E">
+  <title>Paddle Tournament – First to 6</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 16px;
+      color: #0f172a;
+    }
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      padding: 20px 18px;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e293b;
+      border-left: 5px solid #f97316;
+      padding-left: 14px;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .setup-panel {
+      flex: 1.2;
+      min-width: 260px;
+    }
+    .tournament-panel {
+      flex: 2.5;
+      min-width: 280px;
+    }
+    input, button, textarea {
+      font-size: 1rem;
+      border-radius: 60px;
+      border: 1px solid #cbd5e1;
+      padding: 12px 16px;
+      background: white;
+    }
+    button {
+      background: #f97316;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:active { transform: scale(0.97); background: #ea580c; }
+    .btn-secondary { background: #334155; }
+    .btn-secondary:active { background: #1e293b; }
+    .btn-outline {
+      background: white;
+      border: 1px solid #f97316;
+      color: #f97316;
+    }
+    .player-list {
+      background: #f8fafc;
+      border-radius: 24px;
+      padding: 12px;
+      margin: 12px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .player-tag {
+      background: white;
+      border-radius: 40px;
+      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .remove-player {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: none;
+      border-radius: 30px;
+      width: 24px;
+      height: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .team-badge {
+      background: #fef9c3;
+      padding: 8px 12px;
+      border-radius: 40px;
+      font-weight: 500;
+      margin: 6px 6px 0 0;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+    .match-card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #e2e8f0;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .match-header {
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      border-bottom: 1px dashed #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .round-tag {
+      background: #e2e8f0;
+      border-radius: 40px;
+      padding: 2px 12px;
+      font-size: 0.75rem;
+    }
+    .team-names {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0;
+      font-weight: 600;
+    }
+    .team-a, .team-b {
+      flex: 1;
+      text-align: center;
+      background: #f1f5f9;
+      padding: 8px;
+      border-radius: 40px;
+    }
+    .score-area {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 16px 0;
+    }
+    .score-control {
+      text-align: center;
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 32px;
+      min-width: 140px;
+    }
+    .score-badge {
+      font-size: 2rem;
+      font-weight: 800;
+      background: #0f172a;
+      color: white;
+      padding: 4px 18px;
+      border-radius: 48px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+    .btn-score {
+      background: #f97316;
+      border-radius: 40px;
+      padding: 8px 20px;
+      margin: 4px;
+    }
+    .input-score {
+      width: 70px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-radius: 40px;
+      margin: 0 4px;
+    }
+    .save-score-btn {
+      background: #10b981;
+      margin-top: 8px;
+    }
+    .winner-badge {
+      background: #22c55e;
+      color: white;
+      border-radius: 40px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .standings-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .standings-table th, .standings-table td {
+      text-align: left;
+      padding: 10px 6px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .error-msg {
+      color: #dc2626;
+      background: #fee2e2;
+      border-radius: 60px;
+      padding: 8px 16px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    @media print {
+      body { background: white; }
+      .no-print, button, .btn-score, .save-score-btn, .remove-player, .btn-outline { display: none !important; }
+      .match-card { break-inside: avoid; border: 1px solid #ccc; }
+    }
+    @media (max-width: 780px) {
+      .team-names { flex-direction: column; gap: 8px; }
+      .score-area { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="print-btn-container no-print" style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+    <button id="printPdfBtn" style="background:#2c3e66; padding: 10px 24px;">🖨️ Print / PDF</button>
+  </div>
+  <div class="card">
+    <div class="card-title">🏓 Paddle Tournament (First to 6)</div>
+    <div class="flex-row">
+      <div class="setup-panel">
+        <div style="margin-bottom: 20px;">
+          <label>🎾 Number of Courts</label>
+          <input type="number" id="courtsInput" min="1" max="12" value="2" step="1" style="width:100%; margin-top:6px;">
+        </div>
+        <div>
+          <label>👥 Players (even #)</label>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <input type="text" id="newPlayerName" placeholder="Player name" style="flex:1;">
+            <button id="addPlayerBtn" class="btn-secondary">+ Add</button>
+          </div>
+          <textarea id="bulkPlayers" rows="2" placeholder="Bulk: John, Sarah, Mike, Lisa" style="width:100%; margin-top:10px; border-radius:20px;"></textarea>
+          <button id="bulkImportBtn" style="margin-top:6px; background:#475569;">📋 Import</button>
+          <div id="playersContainer" class="player-list"></div>
+          <div id="playerError" class="error-msg" style="display:none;"></div>
+          <button id="randomizeTeamsBtn" style="width:100%; margin:12px 0;">🎲 Randomize Teams & Schedule</button>
+          <button id="rescheduleBtn" class="btn-outline" style="width:100%;">🔄 Re-schedule</button>
+        </div>
+      </div>
+      <div class="tournament-panel">
+        <div><strong>🏆 Current Teams</strong><div id="teamsList" style="margin-top:8px;"></div></div>
+        <div id="scheduleInfo" style="font-size:0.8rem; color:#334155; margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚡ Matches (first to 6 games wins)</div>
+    <div id="matchesContainer"></div>
+    <div class="no-print" style="display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between;">
+      <button id="resetAllScoresBtn" class="btn-outline">⟳ Reset all scores</button>
+      <div><strong>Standings</strong></div>
+    </div>
+    <div id="standingsTable"></div>
+  </div>
+</div>
+
+<script>
+  // ----- PERSISTENCE -----
+  let players = [], teams = [], matches = [], courtsCount = 2, nextMatchId = 1;
+  const WIN_THRESHOLD = 6;
+
+  function saveToLocal() {
+    localStorage.setItem('paddle_data', JSON.stringify({ players, teams, matches, courtsCount, nextMatchId }));
+  }
+  function loadFromLocal() {
+    const raw = localStorage.getItem('paddle_data');
+    if(!raw) return false;
+    try {
+      const data = JSON.parse(raw);
+      players = data.players || [];
+      teams = data.teams || [];
+      matches = data.matches || [];
+      courtsCount = data.courtsCount || 2;
+      nextMatchId = data.nextMatchId || 1;
+      document.getElementById('courtsInput').value = courtsCount;
+      renderPlayersUI();
+      renderTeamsAndMatches();
+      return true;
+    } catch(e) { return false; }
+  }
+
+  // ----- helpers -----
+  function setPlayerError(msg) {
+    const errDiv = document.getElementById('playerError');
+    if(msg) { errDiv.innerText = msg; errDiv.style.display = 'block'; }
+    else { errDiv.style.display = 'none'; }
+  }
+  function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+  function renderPlayersUI() {
+    const container = document.getElementById('playersContainer');
+    container.innerHTML = '';
+    players.forEach((p,idx) => {
+      const tag = document.createElement('div');
+      tag.className = 'player-tag';
+      tag.innerHTML = `${escapeHtml(p)} <button class="remove-player" data-idx="${idx}">✕</button>`;
+      container.appendChild(tag);
+    });
+    if(players.length===0) container.innerHTML = '<div style="color:#94a3b8;">No players yet.</div>';
+    document.querySelectorAll('.remove-player').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(btn.dataset.idx);
+        if(!isNaN(idx)) { players.splice(idx,1); renderPlayersUI(); clearTournamentState(); saveToLocal(); }
+      });
+    });
+  }
+
+  function clearTournamentState() { teams = []; matches = []; renderTeamsAndMatches(); saveToLocal(); }
+
+  function generateRandomTeams() {
+    if(players.length<2) { setPlayerError("Need at least 2 players"); return false; }
+    if(players.length%2!==0) { setPlayerError(`Odd players (${players.length}) → need even`); return false; }
+    setPlayerError(null);
+    const shuffled = [...players];
+    for(let i=shuffled.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; }
+    const newTeams = [];
+    for(let i=0;i<shuffled.length;i+=2) newTeams.push({ id:i/2, name:`Team ${i/2+1}`, players:[shuffled[i],shuffled[i+1]] });
+    teams = newTeams;
+    return true;
+  }
+
+  function buildSchedule() {
+    if(teams.length<2) return [];
+    const allPairs = [];
+    for(let i=0;i<teams.length;i++) for(let j=i+1;j<teams.length;j++) allPairs.push({ teamA:i, teamB:j });
+    for(let i=allPairs.length-1;i>0;i--) { const r=Math.floor(Math.random()*(i+1)); [allPairs[i],allPairs[r]]=[allPairs[r],allPairs[i]]; }
+    const rounds = [], used = new Array(allPairs.length).fill(false);
+    let any=true;
+    while(any) {
+      any=false;
+      const usedTeams=new Set(), round=[];
+      for(let i=0;i<allPairs.length;i++) {
+        if(used[i]) continue;
+        const p=allPairs[i];
+        if(!usedTeams.has(p.teamA) && !usedTeams.has(p.teamB) && round.length<courtsCount) {
+          used[i]=true; usedTeams.add(p.teamA); usedTeams.add(p.teamB);
+          round.push({ teamAIndex:p.teamA, teamBIndex:p.teamB });
+        }
+      }
+      if(round.length) { rounds.push(round); any=used.some(f=>!f); }
+      else { for(let i=0;i<allPairs.length;i++) if(!used[i]) rounds.push([{ teamAIndex:allPairs[i].teamA, teamBIndex:allPairs[i].teamB }]); break; }
+    }
+    const newMatches = [];
+    for(let r=0;r<rounds.length;r++) {
+      for(const m of rounds[r]) {
+        newMatches.push({ id:nextMatchId++, round:r+1, teamAIndex:m.teamAIndex, teamBIndex:m.teamBIndex, gamesA:0, gamesB:0, winnerTeamIndex:null, isCompleted:false });
+      }
+    }
+    return newMatches;
+  }
+
+  function generateSchedule() { if(!teams.length) { matches=[]; renderTeamsAndMatches(); return; } matches = buildSchedule(); renderTeamsAndMatches(); saveToLocal(); }
+
+  function setMatchScore(matchId, newA, newB) {
+    const m = matches.find(m=>m.id===matchId);
+    if(!m || m.isCompleted) return false;
+    if(newA<0 || newB<0) return false;
+    if((newA>=WIN_THRESHOLD && newB>=WIN_THRESHOLD)) { alert("Both can't reach win threshold"); return false; }
+    m.gamesA = newA; m.gamesB = newB;
+    if(newA >= WIN_THRESHOLD) { m.winnerTeamIndex = m.teamAIndex; m.isCompleted = true; }
+    else if(newB >= WIN_THRESHOLD) { m.winnerTeamIndex = m.teamBIndex; m.isCompleted = true; }
+    else { m.isCompleted = false; m.winnerTeamIndex = null; }
+    renderTeamsAndMatches(); saveToLocal();
+    return true;
+  }
+
+  function increment(matchId, side) {
+    const m = matches.find(m=>m.id===matchId);
+    if(!m || m.isCompleted) return;
+    let a=m.gamesA, b=m.gamesB;
+    if(side==='A') a++; else b++;
+    setMatchScore(matchId, a, b);
+  }
+
+  function resetMatch(matchId) { const m=matches.find(m=>m.id===matchId); if(m) { m.gamesA=0; m.gamesB=0; m.winnerTeamIndex=null; m.isCompleted=false; renderTeamsAndMatches(); saveToLocal(); } }
+  function resetAllMatches() { matches.forEach(m=>{ m.gamesA=0; m.gamesB=0; m.winnerTeamIndex=null; m.isCompleted=false; }); renderTeamsAndMatches(); saveToLocal(); }
+
+  function computeStandings() {
+    if(!teams.length) return [];
+    const standings = teams.map((t,idx)=>({ teamName:t.name, players:t.players.join(' & '), wins:0, losses:0, played:0 }));
+    matches.forEach(m=>{ if(m.isCompleted && m.winnerTeamIndex!==null) { const loser = m.winnerTeamIndex===m.teamAIndex ? m.teamBIndex : m.teamAIndex; standings[m.winnerTeamIndex].wins++; standings[loser].losses++; standings[m.winnerTeamIndex].played++; standings[loser].played++; } });
+    return standings;
+  }
+
+  function renderTeamsAndMatches() {
+    const teamsDiv = document.getElementById('teamsList');
+    if(!teams.length) teamsDiv.innerHTML = '<span style="color:#94a3b8;">No teams yet. Randomize!</span>';
+    else { let html='<div style="display:flex; flex-wrap:wrap; gap:10px;">'; teams.forEach(t=>{ html+=`<div class="team-badge">🏸 ${escapeHtml(t.name)}: ${escapeHtml(t.players.join(' & '))}</div>`; }); html+='</div>'; teamsDiv.innerHTML=html; }
+
+    const info = document.getElementById('scheduleInfo');
+    if(teams.length && matches.length) info.innerHTML = `📅 ${matches.length} matches · ${new Set(matches.map(m=>m.round)).size} rounds · ${courtsCount} courts · First to ${WIN_THRESHOLD} wins`;
+    else if(teams.length) info.innerHTML = '⚠️ No schedule. Click Re-schedule.';
+    else info.innerHTML = '⚙️ Add players, randomize.';
+
+    if(!matches.length) { document.getElementById('matchesContainer').innerHTML = '<div style="text-align:center;padding:20px;">🏁 No matches scheduled.</div>'; document.getElementById('standingsTable').innerHTML = ''; return; }
+
+    const grouped = new Map();
+    matches.forEach(m=>{ if(!grouped.has(m.round)) grouped.set(m.round,[]); grouped.get(m.round).push(m); });
+    let html='';
+    for(let round of Array.from(grouped.keys()).sort((a,b)=>a-b)) {
+      html+=`<div style="margin-bottom:28px;"><div style="font-weight:700;background:#f1f5f9;display:inline-block;padding:4px 16px;border-radius:30px;margin-bottom:12px;">🏅 ROUND ${round}</div>`;
+      for(const m of grouped.get(round)) {
+        const tA=teams[m.teamAIndex], tB=teams[m.teamBIndex];
+        if(!tA||!tB) continue;
+        const winner = m.isCompleted ? (m.winnerTeamIndex===m.teamAIndex ? tA.name : tB.name) : null;
+        html+=`<div class="match-card">
+          <div class="match-header"><span class="round-tag">Match ${m.id}</span>${m.isCompleted?`<span class="winner-badge">🏆 WINNER: ${escapeHtml(winner)}</span>`:'<span>⚡ in progress</span>'}</div>
+          <div class="team-names"><div class="team-a"><strong>${escapeHtml(tA.name)}</strong><br><span style="font-size:0.75rem;">${escapeHtml(tA.players.join(' & '))}</span></div><div style="font-weight:bold;">VS</div><div class="team-b"><strong>${escapeHtml(tB.name)}</strong><br><span style="font-size:0.75rem;">${escapeHtml(tB.players.join(' & '))}</span></div></div>
+          <div class="score-area">
+            <div class="score-control"><div class="score-badge">${m.gamesA}</div><button class="btn-score inc-btn" data-action="incA" data-match="${m.id}" ${m.isCompleted?'disabled':''}>➕ +1 (A)</button></div>
+            <div class="score-control"><div class="score-badge">${m.gamesB}</div><button class="btn-score inc-btn" data-action="incB" data-match="${m.id}" ${m.isCompleted?'disabled':''}>➕ +1 (B)</button></div>
+            <div class="score-control" style="background:#f1f5f9;"><label>✏️ Set score</label><br><input type="number" id="gA_${m.id}" value="${m.gamesA}" min="0" class="input-score" ${m.isCompleted?'disabled':''}> - <input type="number" id="gB_${m.id}" value="${m.gamesB}" min="0" class="input-score" ${m.isCompleted?'disabled':''}><button class="save-score-btn" data-save="${m.id}" ${m.isCompleted?'disabled':''}>💾 Save</button></div>
+          </div>
+          <div style="text-align:center;"><button class="btn-outline reset-match-btn" data-reset="${m.id}" style="padding:6px 14px;">⟳ Reset match</button></div>
+          <div style="font-size:0.7rem;text-align:center;">🏆 First to ${WIN_THRESHOLD} games wins</div>
+        </div>`;
+      }
+      html+=`</div>`;
+    }
+    document.getElementById('matchesContainer').innerHTML = html;
+    // bind events
+    document.querySelectorAll('.inc-btn').forEach(btn=>btn.addEventListener('click', (e)=>{ const id=parseInt(btn.dataset.match), act=btn.dataset.action; if(act==='incA') increment(id,'A'); else increment(id,'B'); }));
+    document.querySelectorAll('[data-save]').forEach(btn=>btn.addEventListener('click', (e)=>{ const id=parseInt(btn.dataset.save); const a=parseInt(document.getElementById(`gA_${id}`).value)||0; const b=parseInt(document.getElementById(`gB_${id}`).value)||0; setMatchScore(id,a,b); }));
+    document.querySelectorAll('.reset-match-btn').forEach(btn=>btn.addEventListener('click', (e)=>{ resetMatch(parseInt(btn.dataset.reset)); }));
+
+    const standings = computeStandings();
+    if(standings.length) {
+      let stab = `<table class="standings-table"><thead><tr><th>Team</th><th>Players</th><th>Wins</th><th>Losses</th><th>Played</th></tr></thead><tbody>`;
+      standings.forEach(s=>{ stab+=`<tr><td>${escapeHtml(s.teamName)}</td><td>${escapeHtml(s.players)}</td><td>${s.wins}</td><td>${s.losses}</td><td>${s.played}</td></tr>`; });
+      stab+=`</tbody></table>`;
+      document.getElementById('standingsTable').innerHTML = stab;
+    } else document.getElementById('standingsTable').innerHTML = '<div style="padding:12px;">No completed matches</div>';
+  }
+
+  function randomizeFull() { if(players.length%2!==0){ setPlayerError(`Odd count: ${players.length}`); return; } if(generateRandomTeams()) generateSchedule(); saveToLocal(); }
+  function rescheduleTournament() { if(teams.length) generateSchedule(); else setPlayerError("No teams"); }
+
+  // event listeners & init
+  document.getElementById('randomizeTeamsBtn').addEventListener('click', randomizeFull);
+  document.getElementById('rescheduleBtn').addEventListener('click', rescheduleTournament);
+  document.getElementById('addPlayerBtn').addEventListener('click', ()=>{ const name=document.getElementById('newPlayerName').value.trim(); if(name && !players.includes(name)){ players.push(name); renderPlayersUI(); clearTournamentState(); saveToLocal(); document.getElementById('newPlayerName').value=''; } else setPlayerError("Invalid or duplicate"); });
+  document.getElementById('bulkImportBtn').addEventListener('click', ()=>{ const raw=document.getElementById('bulkPlayers').value; const items=raw.split(/[ ,\n]+/).filter(s=>s.trim()); const uniq=[]; items.forEach(i=>{ const c=i.trim(); if(c && !uniq.includes(c)) uniq.push(c); }); if(uniq.length){ players=uniq; renderPlayersUI(); clearTournamentState(); saveToLocal(); document.getElementById('bulkPlayers').value=''; } });
+  document.getElementById('resetAllScoresBtn').addEventListener('click', resetAllMatches);
+  document.getElementById('printPdfBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('courtsInput').addEventListener('change', (e)=>{ courtsCount=parseInt(e.target.value)||1; if(teams.length) generateSchedule(); saveToLocal(); });
+
+  if(!loadFromLocal()) { // fresh demo
+    players = ['Anna', 'Luis', 'Maria', 'Carlos', 'Sofia', 'David'];
+    renderPlayersUI();
+    courtsCount = 2;
+    document.getElementById('courtsInput').value = 2;
+    generateRandomTeams(); generateSchedule();
+    saveToLocal();
+  }
+</script>
+</body>
+</html>
